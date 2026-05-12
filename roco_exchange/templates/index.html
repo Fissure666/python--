@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洛克王国精灵蛋互换站</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fff9c4; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: #f57f17; text-shadow: 1px 1px 0 white; }
+        .container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; margin-bottom: 20px; }
+        input { width: calc(100% - 22px); padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; }
+        button { width: 100%; padding: 12px; background-color: #fbc02d; color: #5d4037; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #fdd835; }
+        
+        .trade-card { background: #fff; border-left: 5px solid #fbc02d; margin: 10px 0; padding: 15px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); width: 100%; max-width: 500px; position: relative; }
+        .uid-tag { font-size: 13px; color: #666; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
+        .copy-btn { background: #f0f0f0; border: 1px solid #ccc; padding: 2px 6px; font-size: 11px; cursor: pointer; border-radius: 4px; margin-left: 8px; width: auto; display: inline; }
+        .have { color: #2e7d32; font-weight: bold; }
+        .want { color: #d32f2f; font-weight: bold; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>🥚 洛克王国精灵蛋互换站</h1>
+
+    <!-- 搜索框 -->
+    <div class="container" style="background-color: #fffde7;">
+        <form action="/" method="get" class="search-box">
+            <input type="text" name="search" placeholder="搜索精灵名..." value="{{ search_query or '' }}" style="flex:1; margin:0;">
+            <button type="submit" style="width: 80px;">搜索</button>
+            {% if search_query %}<a href="/" style="line-height:40px; font-size:12px; color: #999;">清空</a>{% endif %}
+        </form>
+    </div>
+
+    <!-- 发布框 -->
+    <div class="container">
+        <form action="/post" method="post">
+            <input type="text" name="uid" placeholder="你的游戏 UID" required>
+            <input type="text" name="have_pet" placeholder="我有的精灵蛋" required>
+            <input type="text" name="want_pet" placeholder="想换的精灵蛋" required>
+            <button type="submit">发布互换信息</button>
+        </form>
+    </div>
+
+    <!-- 信息列表 -->
+    <div style="width: 100%; max-width: 500px;">
+        <h3>📜 实时互换看板</h3>
+        {% for item in trades %}
+        <div class="trade-card">
+            <div class="uid-tag">
+                UID: <span id="uid-{{ loop.index }}">{{ item.uid }}</span>
+                <button class="copy-btn" onclick="copyText('uid-{{ loop.index }}')">复制</button>
+            </div>
+            <div class="have">【持有】{{ item.have_pet }}</div>
+            <div class="want">【求换】{{ item.want_pet }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+    function copyText(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("UID " + text + " 已复制！");
+        });
+    }
+    </script>
+</body>
+</html>
