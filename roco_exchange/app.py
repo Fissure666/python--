@@ -55,3 +55,58 @@ def post_info():
 
 if __name__ == '__main__':
     app.run(debug=True)
+import time
+
+MESSAGES_FILE = 'messages.json'
+
+# 加载留言
+def load_messages():
+    if not os.path.exists(MESSAGES_FILE):
+        return []
+    with open(MESSAGES_FILE, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+# 保存留言
+def save_messages(messages):
+    with open(MESSAGES_FILE, 'w', encoding='utf-8') as f:
+        json.dump(messages, f, ensure_ascii=False, indent=4)
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    nickname = request.form.get('nickname', '匿名小洛克')
+    content = request.form.get('content')
+    
+    if content:
+        messages = load_messages()
+        # 只保留最新的 50 条留言，防止文件过大
+        messages.insert(0, {
+            "nickname": nickname,
+            "content": content,
+            "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        })
+        save_messages(messages[:50])
+        
+    return redirect(url_status='/')
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    nickname = request.form.get('nickname', '匿名小洛克')
+    content = request.form.get('content')
+    
+    if content:
+        messages = load_messages()
+        # 插入新留言到列表最前端
+        messages.insert(0, {
+            "nickname": nickname,
+            "content": content,
+            "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        })
+        # 修改这里：保留最新的 100 条留言
+        save_messages(messages[:100])
+        
+    return redirect('/')
+
+@app.route('/')
+def index():
+    trades = load_trades()
+    messages = load_messages()  # 加载新留言
+    return render_template('index.html', trades=trades, messages=messages)

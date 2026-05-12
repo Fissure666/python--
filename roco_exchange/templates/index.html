@@ -68,3 +68,36 @@
     </script>
 </body>
 </html>
+<!-- 使用 Flex 布局将页面分为左右两部分 -->
+<div style="display: flex; gap: 20px; padding: 20px;">
+    
+    <!-- 左边：原有的互换功能区 (占 70%) -->
+    <div style="flex: 7;">
+        <!-- 这里放你原来的上传和列表代码 -->
+    </div>
+
+    <!-- 右边：新增的暖心留言板 (占 30%) -->
+    <div style="flex: 3; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd;">
+        <h3>🌟 暖心留言板</h3>
+        
+        <!-- 发送留言的表单 -->
+        <form action="/send_message" method="post">
+            <input type="text" name="nickname" placeholder="你的昵称" style="width: 100%; margin-bottom: 5px;">
+            <textarea name="content" placeholder="写下你的祝福..." style="width: 100%; height: 60px;"></textarea>
+            <button type="submit" style="width: 100%; background: #ffcc00; border: none; padding: 5px; cursor: pointer;">发布留言</button>
+        </form>
+
+        <hr>
+
+        <!-- 显示留言列表 -->
+        <div style="max-height: 400px; overflow-y: auto;">
+            {% for msg in messages %}
+            <div style="margin-bottom: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">
+                <strong style="color: #555;">{{ msg.nickname }}</strong> 
+                <small style="color: #999; float: right;">{{ msg.time }}</small>
+                <p style="margin: 5px 0; color: #333;">{{ msg.content }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
