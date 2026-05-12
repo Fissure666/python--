@@ -4,44 +4,57 @@ import os
 
 app = Flask(__name__)
 
-# 数据存储路径
 MSG_FILE = 'messages.json'
+TRADE_FILE = 'trades.json' # 假设你的互换数据存这里
 
-def load_messages():
-    if os.path.exists(MSG_FILE):
-        with open(MSG_FILE, 'r', encoding='utf-8') as f:
+def load_data(file):
+    if os.path.exists(file):
+        with open(file, 'r', encoding='utf-8') as f:
             return json.load(f)
     return []
 
-def save_messages(messages):
-    with open(MSG_FILE, 'w', encoding='utf-8') as f:
-        json.dump(messages, f, ensure_ascii=False, indent=4)
+def save_data(file, data):
+    with open(file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
 @app.route('/')
 def index():
-    messages = load_messages()
-    # 这里假设你已经有了 trades 的逻辑，如果没有可以先给个空列表
-    return render_template('index.html', messages=messages, trades=[])
+    search_query = request.args.get('search', '').lower()
+    messages = load_data(MSG_FILE)
+    all_trades = load_data(TRADE_FILE)
+    
+    # 搜索过滤逻辑
+    if search_query:
+        trades = [t for t in all_trades if 
+                  search_query in t.get('have_pet', '').lower() or 
+                  search_query in t.get('want_pet', '').lower() or 
+                  search_query in t.get('uid', '').lower()]
+    else:
+        trades = all_trades
+
+    return render_template('index.html', messages=messages, trades=trades)
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
     nickname = request.form.get('nickname')
     content = request.form.get('content')
-    
-    if not nickname or not content:
-        return redirect(url_for('index'))
+    if nickname and content:
+        messages = load_data(MSG_FILE)
+        # 防重复：如果内容和第一条一样，不存
+        if not (messages and messages[0]['content'] == content):
+            messages.insert(0, {'nickname': nickname, 'content': content})
+            save_data(MSG_FILE, messages)
+    return redirect(url_for('index'))
 
-    messages = load_messages()
-
-    # ✨ 防重复逻辑：如果新内容和最上面一条完全一样，则不保存
-    if messages and messages[0]['nickname'] == nickname and messages[0]['content'] == content:
-        return redirect(url_for('index'))
-
-    # 插入新留言并保存
-    messages.insert(0, {'nickname': nickname, 'content': content})
-    save_messages(messages)
-    
-    # ✨ 核心：必须重定向，防止刷新页面导致重复提交
+@app.route('/post', methods=['POST'])
+def post_trade():
+    uid = request.form.get('uid')
+    have = request.form.get('have_pet')
+    want = request.form.get('want_pet')
+    if uid and have and want:
+        trades = load_data(TRADE_FILE)
+        trades.insert(0, {'uid': uid, 'have_pet': have, 'want_pet': want})
+        save_data(TRADE_FILE, trades)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

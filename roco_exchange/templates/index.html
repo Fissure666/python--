@@ -5,73 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>洛克王国精灵蛋互换站</title>
     <style>
-        body { background-color: #fdf5e6; font-family: sans-serif; margin: 0; padding: 15px; position: relative; }
+        body { background-color: #fdf5e6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; color: #5d4037; }
         
-        /* 页面署名 */
-        .signature { position: absolute; top: 10px; left: 15px; font-size: 12px; color: #8d6e63; opacity: 0.8; }
+        .signature { font-size: 12px; color: #8d6e63; opacity: 0.7; margin-bottom: 10px; text-align: center; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #ff8c00; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        .top-container { max-width: 800px; margin: 0 auto 30px auto; display: flex; flex-direction: column; gap: 15px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
         
-        .header { text-align: center; color: #ff8c00; margin: 20px 0; }
-        .top-section { max-width: 600px; margin: 0 auto 20px auto; } 
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        
-        .main-container { 
+        /* 搜索和发布表单样式 */
+        .inline-form { display: flex; gap: 10px; }
+        input { flex: 1; padding: 10px; border: 1px solid #eee; border-radius: 8px; outline: none; }
+        .btn { background: #ffcc00; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #ffb300; }
+
+        /* 核心布局：左右并排 */
+        .main-content { 
             display: flex; 
-            gap: 20px; 
-            max-width: 1000px; 
+            max-width: 1100px; 
             margin: 0 auto; 
-            align-items: flex-start;
-            flex-wrap: wrap; 
+            gap: 25px; 
+            align-items: flex-start; /* ✨ 核心修复：确保顶部对齐 */
         }
 
-        .trade-section { flex: 1.5; min-width: 280px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .message-section { flex: 0.8; min-width: 250px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 5px solid #ffcc00; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #f5f5f5; padding: 6px 10px; text-align: left; }
-        th { background-color: #fffde7; }
-        
-        input, textarea { width: 100%; padding: 8px; margin: 5px 0 10px 0; border-radius: 6px; border: 1px solid #eee; box-sizing: border-box; }
-        textarea { height: 100px; resize: none; }
-        .btn { background: #ffcc00; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-        
+        .left-panel { flex: 1.5; min-width: 0; } /* 看板 */
+        .right-panel { flex: 1; min-width: 0; }  /* 留言板 */
+
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #f9f9f9; }
+        th { background: #fffde7; font-size: 14px; }
+
+        .msg-list { max-height: 500px; overflow-y: auto; margin-top: 15px; }
         .msg-item { 
-            background: #fff9e6; padding: 12px; border-radius: 8px; margin-bottom: 12px; 
+            background: #fffbe6; padding: 12px; border-radius: 10px; margin-bottom: 10px; 
             border-left: 4px solid #ffcc00; font-size: 14px; line-height: 1.6;
             word-wrap: break-word; white-space: pre-wrap;
         }
 
-        /* 手机端自适应逻辑 */
-        @media (max-width: 768px) {
-            .main-container { flex-direction: column; }
-            .trade-section, .message-section { width: 100%; }
-            .signature { position: static; text-align: center; margin-bottom: 10px; }
+        @media (max-width: 850px) {
+            .main-content { flex-direction: column; }
+            .left-panel, .right-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="signature">开发者: 发丝(洛克王国世界) & Gemini 3 Flash</div>
+    <div class="signature">开发者: 发丝(洛克王国世界) | 运行环境: Santa Fe College CS Project</div>
 
     <div class="header">
         <h1>🥚 洛克王国精灵蛋互换站</h1>
     </div>
 
-    <div class="top-section">
+    <div class="top-container">
+        <!-- 搜索框 -->
         <div class="card">
-            <h4 style="margin:0 0 10px 0; color: #5d4037;">📢 发布互换信息</h4>
-            <form action="/post" method="post">
-                <input type="text" name="uid" placeholder="游戏 UID" required>
-                <input type="text" name="have_pet" placeholder="我有的蛋" required>
-                <input type="text" name="want_pet" placeholder="想换的蛋" required>
-                <button type="submit" class="btn">立即发布</button>
+            <form action="/" method="get" class="inline-form">
+                <input type="text" name="search" placeholder="🔍 搜索精灵名字或 UID..." value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="btn">搜索</button>
+                <a href="/" style="text-decoration:none; color:#999; font-size:13px; align-self:center;">重置</a>
+            </form>
+        </div>
+
+        <!-- 发布框 -->
+        <div class="card">
+            <form action="/post" method="post" class="inline-form">
+                <input type="text" name="uid" placeholder="UID" required>
+                <input type="text" name="have_pet" placeholder="我有..." required>
+                <input type="text" name="want_pet" placeholder="想换..." required>
+                <button type="submit" class="btn">发布</button>
             </form>
         </div>
     </div>
 
-    <div class="main-container">
-        <div class="trade-section">
-            <h3>📜 实时互换看板</h3>
-            <div style="overflow-x: auto;">
+    <div class="main-content">
+        <!-- 左侧看板 -->
+        <div class="left-panel">
+            <div class="card">
+                <h3>📜 实时互换看板</h3>
                 <table>
                     <thead>
                         <tr><th>UID</th><th>我有</th><th>我想换</th></tr>
@@ -79,23 +90,28 @@
                     <tbody>
                         {% for trade in trades %}
                         <tr><td>{{ trade.uid }}</td><td>{{ trade.have_pet }}</td><td>{{ trade.want_pet }}</td></tr>
+                        {% else %}
+                        <tr><td colspan="3" style="text-align:center; color:#999;">暂无匹配信息</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="message-section">
-            <h3>🌟 暖心留言板</h3>
-            <form action="/send_message" method="post">
-                <input type="text" name="nickname" placeholder="你的昵称" required>
-                <textarea name="content" placeholder="写下你的祝福..." required></textarea>
-                <button type="submit" class="btn">发布留言</button>
-            </form>
-            <div style="margin-top: 15px; max-height: 400px; overflow-y: auto;">
-                {% for msg in messages %}
-                <div class="msg-item"><strong>{{ msg.nickname }}</strong>: {{ msg.content }}</div>
-                {% endfor %}
+        <!-- 右侧留言板 -->
+        <div class="right-panel">
+            <div class="card">
+                <h3>🌟 暖心留言板</h3>
+                <form action="/send_message" method="post">
+                    <input type="text" name="nickname" placeholder="昵称" required style="width:100%; margin-bottom:10px;">
+                    <textarea name="content" placeholder="写下你的祝福..." required style="width:100%; height:80px; padding:10px; border:1px solid #eee; border-radius:8px; margin-bottom:10px;"></textarea>
+                    <button type="submit" class="btn" style="width:100%;">发布留言</button>
+                </form>
+                <div class="msg-list">
+                    {% for msg in messages %}
+                    <div class="msg-item"><strong>{{ msg.nickname }}</strong>: {{ msg.content }}</div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
