@@ -2,105 +2,146 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>洛克王国精灵蛋互换站</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #fff9c4; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        h1 { color: #f57f17; text-shadow: 1px 1px 0 white; }
-        .container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; margin-bottom: 20px; }
-        input { width: calc(100% - 22px); padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; }
-        button { width: 100%; padding: 12px; background-color: #fbc02d; color: #5d4037; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #fdd835; }
-        
-        .trade-card { background: #fff; border-left: 5px solid #fbc02d; margin: 10px 0; padding: 15px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); width: 100%; max-width: 500px; position: relative; }
-        .uid-tag { font-size: 13px; color: #666; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
-        .copy-btn { background: #f0f0f0; border: 1px solid #ccc; padding: 2px 6px; font-size: 11px; cursor: pointer; border-radius: 4px; margin-left: 8px; width: auto; display: inline; }
-        .have { color: #2e7d32; font-weight: bold; }
-        .want { color: #d32f2f; font-weight: bold; }
-        .search-box { display: flex; gap: 10px; margin-bottom: 10px; }
+        body {
+            background-color: #fdf5e6; /* 浅米黄色背景 */
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: #ff8c00;
+            margin-bottom: 30px;
+        }
+        /* Flex 布局主容器 */
+        .main-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+        /* 左侧看板样式 */
+        .trade-section {
+            flex: 2;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        /* 右侧留言板样式 */
+        .message-section {
+            flex: 1;
+            min-width: 320px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 6px solid #ffcc00;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #eee;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #fff9e6;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            resize: none;
+        }
+        .btn {
+            width: 100%;
+            background: #ffcc00;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .msg-item {
+            background: #fff9e6;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ffcc00;
+        }
     </style>
 </head>
 <body>
 
-    <h1>🥚 洛克王国精灵蛋互换站</h1>
+    <div class="header">
+        <h1>🥚 洛克王国精灵蛋互换站</h1>
+    </div>
 
-    <!-- 搜索框 -->
-    <div class="container" style="background-color: #fffde7;">
-        <form action="/" method="get" class="search-box">
-            <input type="text" name="search" placeholder="搜索精灵名..." value="{{ search_query or '' }}" style="flex:1; margin:0;">
-            <button type="submit" style="width: 80px;">搜索</button>
-            {% if search_query %}<a href="/" style="line-height:40px; font-size:12px; color: #999;">清空</a>{% endif %}
+    <!-- 搜索栏保持在顶部 -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <form action="/" method="get">
+            <input type="text" name="search" placeholder="搜索精灵名..." value="{{ search_query }}" style="padding: 10px; width: 300px; border-radius: 5px; border: 1px solid #ddd;">
+            <button type="submit" style="padding: 10px 20px; background: #ffcc00; border: none; border-radius: 5px; color: white;">搜索</button>
         </form>
     </div>
 
-    <!-- 发布框 -->
-    <div class="container">
-        <form action="/post" method="post">
-            <input type="text" name="uid" placeholder="你的游戏 UID" required>
-            <input type="text" name="have_pet" placeholder="我有的精灵蛋" required>
-            <input type="text" name="want_pet" placeholder="想换的精灵蛋" required>
-            <button type="submit">发布互换信息</button>
-        </form>
-    </div>
-
-    <!-- 信息列表 -->
-    <div style="width: 100%; max-width: 500px;">
-        <h3>📜 实时互换看板</h3>
-        {% for item in trades %}
-        <div class="trade-card">
-            <div class="uid-tag">
-                UID: <span id="uid-{{ loop.index }}">{{ item.uid }}</span>
-                <button class="copy-btn" onclick="copyText('uid-{{ loop.index }}')">复制</button>
-            </div>
-            <div class="have">【持有】{{ item.have_pet }}</div>
-            <div class="want">【求换】{{ item.want_pet }}</div>
+    <!-- 主容器开始：并排显示 -->
+    <div class="main-container">
+        
+        <!-- 左边：互换看板 -->
+        <div class="trade-section">
+            <h2>📜 实时互换看板</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>UID</th>
+                        <th>我有</th>
+                        <th>我想换</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trade in trades %}
+                    <tr>
+                        <td>{{ trade.uid }}</td>
+                        <td>{{ trade.have_pet }}</td>
+                        <td>{{ trade.want_pet }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        {% endfor %}
+
+        <!-- 右边：留言板 -->
+        <div class="message-section">
+            <h2>🌟 暖心留言板</h2>
+            <form action="/send_message" method="post">
+                <input type="text" name="nickname" placeholder="你的昵称" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box;">
+                <textarea name="content" placeholder="写下你的祝福..." required></textarea>
+                <button type="submit" class="btn">发布留言</button>
+            </form>
+
+            <div style="margin-top: 25px; max-height: 400px; overflow-y: auto;">
+                {% for msg in messages %}
+                <div class="msg-item">
+                    <strong>{{ msg.nickname }}</strong>: {{ msg.content }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 
-    <script>
-    function copyText(id) {
-        const text = document.getElementById(id).innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            alert("UID " + text + " 已复制！");
-        });
-    }
-    </script>
 </body>
 </html>
-<!-- 1. 在这里开始套大盒子 -->
-<div style="display: flex; gap: 30px; padding: 20px; align-items: flex-start;">
-
-    <!-- 左侧：互换看板区域 -->
-    <div style="flex: 2;"> 
-        <h2 style="font-size: 24px;">📜 实时互换看板</h2>
-        <!-- 保持你原来的表格 (Table) 或看板代码不变，放在这里 -->
-        <div class="trade-container">
-            <!-- 原有的表格代码... -->
-        </div>
-    </div>
-
-    <!-- 右侧：暖心留言板区域 -->
-    <div style="flex: 1; min-width: 350px; background: #f9f9f9; padding: 20px; border-radius: 15px; border: 1px solid #ddd;">
-        <h2 style="font-size: 22px;">🌟 暖心留言板</h2>
-        
-        <form action="/send_message" method="post">
-            <input type="text" name="nickname" placeholder="你的昵称" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
-            
-            <!-- 这里把高度加成 150px，让留言板变大 -->
-            <textarea name="content" placeholder="写下你的祝福..." required style="width: 100%; height: 150px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;"></textarea>
-            
-            <button type="submit" style="width: 100%; background-color: #ffcc00; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">发布留言</button>
-        </form>
-
-        <!-- 留言显示区域 -->
-        <div style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
-            {% for msg in messages %}
-            <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #ffcc00;">
-                <strong>{{ msg.nickname }}</strong>: {{ msg.content }}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-</div> <!-- 2. 在这里结束大盒子 -->
