@@ -27,16 +27,23 @@ trade_list = load_data()
 
 @app.route('/')
 def index():
+    trade_list = load_data() 
     search_query = request.args.get('search', '').strip()
+    
+    # 这一行是从被删掉的那段里“抢救”出来的精华，一定要加上！
+    messages = load_messages() 
+    
     if search_query:
-        # 过滤包含关键词的条目
         filtered = [
-            t for t in trade_list 
-            if search_query.lower() in t['have_pet'].lower() 
+            t for t in trade_list
+            if search_query.lower() in t['have_pet'].lower()
             or search_query.lower() in t['want_pet'].lower()
         ]
-        return render_template('index.html', trades=filtered, search_query=search_query)
-    return render_template('index.html', trades=trade_list)
+        # 记得在返回里也加上 messages=messages
+        return render_template('index.html', trades=filtered, search_query=search_query, messages=messages)
+
+    # 记得在返回里也加上 messages=messages
+    return render_template('index.html', trades=trade_list, messages=messages)
 
 @app.route('/post', methods=['POST'])
 def post_info():
@@ -104,9 +111,3 @@ def send_message():
         save_messages(messages[:100])
         
     return redirect('/')
-
-@app.route('/')
-def index():
-    trades = load_trades()
-    messages = load_messages()  # 加载新留言
-    return render_template('index.html', trades=trades, messages=messages)
