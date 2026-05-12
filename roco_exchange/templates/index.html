@@ -68,36 +68,39 @@
     </script>
 </body>
 </html>
-<!-- 使用 Flex 布局将页面分为左右两部分 -->
-<div style="display: flex; gap: 20px; padding: 20px;">
-    
-    <!-- 左边：原有的互换功能区 (占 70%) -->
-    <div style="flex: 7;">
-        <!-- 这里放你原来的上传和列表代码 -->
+<!-- 1. 在这里开始套大盒子 -->
+<div style="display: flex; gap: 30px; padding: 20px; align-items: flex-start;">
+
+    <!-- 左侧：互换看板区域 -->
+    <div style="flex: 2;"> 
+        <h2 style="font-size: 24px;">📜 实时互换看板</h2>
+        <!-- 保持你原来的表格 (Table) 或看板代码不变，放在这里 -->
+        <div class="trade-container">
+            <!-- 原有的表格代码... -->
+        </div>
     </div>
 
-    <!-- 右边：新增的暖心留言板 (占 30%) -->
-    <div style="flex: 3; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd;">
-        <h3>🌟 暖心留言板</h3>
+    <!-- 右侧：暖心留言板区域 -->
+    <div style="flex: 1; min-width: 350px; background: #f9f9f9; padding: 20px; border-radius: 15px; border: 1px solid #ddd;">
+        <h2 style="font-size: 22px;">🌟 暖心留言板</h2>
         
-        <!-- 发送留言的表单 -->
         <form action="/send_message" method="post">
-            <input type="text" name="nickname" placeholder="你的昵称" style="width: 100%; margin-bottom: 5px;">
-            <textarea name="content" placeholder="写下你的祝福..." style="width: 100%; height: 60px;"></textarea>
-            <button type="submit" style="width: 100%; background: #ffcc00; border: none; padding: 5px; cursor: pointer;">发布留言</button>
+            <input type="text" name="nickname" placeholder="你的昵称" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            
+            <!-- 这里把高度加成 150px，让留言板变大 -->
+            <textarea name="content" placeholder="写下你的祝福..." required style="width: 100%; height: 150px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;"></textarea>
+            
+            <button type="submit" style="width: 100%; background-color: #ffcc00; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">发布留言</button>
         </form>
 
-        <hr>
-
-        <!-- 显示留言列表 -->
-        <div style="max-height: 400px; overflow-y: auto;">
+        <!-- 留言显示区域 -->
+        <div style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
             {% for msg in messages %}
-            <div style="margin-bottom: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">
-                <strong style="color: #555;">{{ msg.nickname }}</strong> 
-                <small style="color: #999; float: right;">{{ msg.time }}</small>
-                <p style="margin: 5px 0; color: #333;">{{ msg.content }}</p>
+            <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #ffcc00;">
+                <strong>{{ msg.nickname }}</strong>: {{ msg.content }}
             </div>
             {% endfor %}
         </div>
     </div>
-</div>
+
+</div> <!-- 2. 在这里结束大盒子 -->
