@@ -72,7 +72,7 @@ def save_messages(messages):
         json.dump(messages, f, ensure_ascii=False, indent=4)
 
 @app.route('/send_message', methods=['POST'])
-def send_message():
+def handle_sweet_message():
     nickname = request.form.get('nickname', '匿名小洛克')
     content = request.form.get('content')
     
