@@ -9,46 +9,50 @@
         body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; }
         
-        /* 📱 响应式输入组：手机自动堆叠，电脑横排 */
+        /* 📱 响应式布局：手机自动堆叠 */
         .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
         input { flex: 1 1 200px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
         
-        .publish-btn { background: var(--primary); border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .publish-btn { background: var(--primary); border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .publish-btn:hover { background: #e6b800; }
 
-        /* 🏷️ 标签选择区域 */
+        /* 🏷️ 标签选择 */
         .tag-box { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .tag-label { font-weight: bold; margin-bottom: 8px; display: block; color: #666; }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        .tag-btn { 
-            background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 20px; 
-            font-size: 14px; cursor: pointer; transition: 0.3s;
-        }
+        .tag-label { font-weight: bold; margin-bottom: 8px; display: block; color: #666; font-size: 14px; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .tag-btn { background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; }
         .tag-btn:active { background: var(--primary); transform: scale(0.95); }
 
-        /* 📋 看板排版：修复文字溢出 */
+        /* 📋 互换列表卡片 */
         .trade-card { 
-            background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;
+            background: white; padding: 15px; border-radius: 10px; margin-bottom: 12px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid var(--primary);
             word-break: break-all; line-height: 1.6;
         }
-        .trade-header { display: flex; justify-content: space-between; color: #888; font-size: 13px; margin-bottom: 5px; }
-        .pet-info { font-size: 16px; color: #333; }
-        .pet-tag { color: #ff6600; font-weight: bold; margin-right: 5px; }
+        .trade-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
+        .uid-text { color: #888; font-family: monospace; font-size: 14px; }
+        
+        /* 复制按钮 */
+        .copy-btn { background: #eee; border: none; padding: 3px 10px; border-radius: 5px; font-size: 11px; cursor: pointer; margin-left: 8px; transition: 0.2s; }
+        .copy-btn.copied { background: #4CAF50; color: white; }
+
+        .pet-info { font-size: 15px; color: #333; margin: 5px 0; }
+        .label-text { color: #999; font-weight: bold; margin-right: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2 style="text-align:center; color:#d4a017;">🥚 精灵蛋互换站</h2>
+        <h2 style="text-align:center; color:#d4a017;">🥚 洛克王国精灵蛋互换站</h2>
 
         <!-- 发布表单 -->
         <form action="/post" method="POST" class="tag-box">
             <div class="input-group">
-                <input type="text" name="uid" placeholder="你的UID" required>
-                <input type="text" name="have_pet" id="have_input" placeholder="我有... (点击下方标签添加)" required>
+                <input type="text" name="uid" placeholder="你的游戏UID" required>
+                <input type="text" name="have_pet" id="have_input" placeholder="我有... (点下方标签快捷输入)" required>
                 <input type="text" name="want_pet" placeholder="我想换..." required>
             </div>
 
-            <span class="tag-label">🏅 奖牌特质:</span>
+            <span class="tag-label">🏅 奖牌选择:</span>
             <div class="tag-container">
                 <button type="button" class="tag-btn" onclick="addTag('粗嗓门')">粗嗓门</button>
                 <button type="button" class="tag-btn" onclick="addTag('婉转声')">婉转声</button>
@@ -56,7 +60,7 @@
                 <button type="button" class="tag-btn" onclick="addTag('小不点')">小不点</button>
             </div>
 
-            <span class="tag-label">🧠 性格特质:</span>
+            <span class="tag-label">🧠 性格选择:</span>
             <div class="tag-container">
                 <button type="button" class="tag-btn" onclick="addTag('聪明')">聪明</button>
                 <button type="button" class="tag-btn" onclick="addTag('固执')">固执</button>
@@ -64,34 +68,59 @@
                 <button type="button" class="tag-btn" onclick="addTag('开朗')">开朗</button>
                 <button type="button" class="tag-btn" onclick="addTag('急躁')">急躁</button>
                 <button type="button" class="tag-btn" onclick="addTag('莽撞')">莽撞</button>
+                <button type="button" class="tag-btn" onclick="addTag('沉默')">沉默</button>
+                <button type="button" class="tag-btn" onclick="addTag('平和')">平和</button>
+                <button type="button" class="tag-btn" onclick="addTag('踏实')">踏实</button>
             </div>
             
             <button type="submit" class="publish-btn">发布互换信息</button>
         </form>
 
-        <!-- 搜索框 -->
-        <form action="/" method="GET" style="display:flex; gap:5px; margin-bottom:20px;">
-            <input type="text" name="search" placeholder="搜索精灵、UID或特质(如:大块头)...">
-            <button type="submit" style="background:#333; color:white; border:none; border-radius:8px; padding:0 20px;">搜索</button>
+        <!-- 搜索功能 -->
+        <form action="/" method="GET" style="display:flex; gap:8px; margin-bottom:20px;">
+            <input type="text" name="search" placeholder="搜索UID、精灵或特质(如:大块头)..." style="flex:1;">
+            <button type="submit" style="background:#333; color:white; border:none; border-radius:8px; padding:0 20px; cursor:pointer;">搜索</button>
         </form>
 
-        <!-- 互换列表 -->
+        <!-- 实时互换看板 -->
         <div id="board">
             {% for trade in trades %}
             <div class="trade-card">
-                <div class="trade-header"><span>UID: {{ trade.uid }}</span></div>
-                <div class="pet-info"><strong>我有：</strong>{{ trade.have_pet }}</div>
-                <div class="pet-info"><strong>想换：</strong>{{ trade.want_pet }}</div>
+                <div class="trade-header">
+                    <span>
+                        <span class="label-text">UID:</span>
+                        <span class="uid-text">{{ trade.uid }}</span>
+                        <button type="button" class="copy-btn" onclick="copyUID(this, '{{ trade.uid }}')">复制</button>
+                    </span>
+                </div>
+                <div class="pet-info"><span class="label-text">我有:</span> {{ trade.have_pet }}</div>
+                <div class="pet-info"><span class="label-text">想换:</span> {{ trade.want_pet }}</div>
             </div>
             {% endfor %}
         </div>
     </div>
 
     <script>
+        // 快捷添加标签
         function addTag(tagName) {
             const input = document.getElementById('have_input');
-            // 自动添加空格隔开标签
             input.value += (input.value ? " " : "") + tagName;
+            input.focus();
+        }
+
+        // 一键复制UID
+        function copyUID(btn, uid) {
+            navigator.clipboard.writeText(uid).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "已复制";
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('copied');
+                }, 1500);
+            }).catch(err => {
+                alert("复制失败，请手动长按UID选择复制");
+            });
         }
     </script>
 </body>
