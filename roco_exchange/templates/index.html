@@ -5,123 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>洛克王国精灵蛋互换站</title>
     <style>
-        :root { --primary: #ffcc00; --bg: #fff9e6; --text-main: #333; --text-light: #777; }
+        :root { --primary: #ffcc00; --bg: #fff9e6; --text-main: #333; --text-light: #777; --accent: #ff9900; }
         
-        /* 🎨 间距优化：增加页面呼吸感 */
         body { 
             font-family: 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif; 
             background: var(--bg); 
             margin: 0; 
-            padding: 30px 20px; 
+            padding: 30px 15px; 
             color: var(--text-main);
-            line-height: 1.8; /* 显著提升行高，拒绝密集 */
+            line-height: 1.8;
         }
         .container { max-width: 800px; margin: auto; }
         
-        /* 👨‍💻 修正后的署名 */
-        .developer-credit { 
-            text-align: center; 
-            font-size: 13px; 
-            color: #bbb; 
-            margin-bottom: 15px;
-            letter-spacing: 1.5px;
-        }
-        .developer-credit strong { color: #999; font-weight: 600; }
-
-        /* 输入区域布局 */
-        .input-group { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .developer-credit { text-align: center; font-size: 13px; color: #bbb; margin-bottom: 15px; letter-spacing: 1.5px; }
+        
+        /* 表单与输入框 */
+        .tag-box { background: white; padding: 25px; border-radius: 18px; margin-bottom: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
+        .input-group { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
         input { 
-            flex: 1 1 220px; 
+            flex: 1 1 200px; 
             padding: 15px; 
-            border: 1px solid #ddd; 
+            border: 1px solid #eee; 
             border-radius: 12px; 
             font-size: 16px; 
             outline: none; 
             transition: all 0.3s;
         }
-        input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 10px rgba(255,204,0,0.25); }
+        input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 10px rgba(255,204,0,0.2); }
         
         .publish-btn { 
-            background: var(--primary); 
-            border: none; 
-            padding: 16px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            width: 100%; 
-            font-size: 17px;
-            letter-spacing: 3px;
-            box-shadow: 0 4px 15px rgba(255,204,0,0.2);
-            transition: 0.2s;
+            background: var(--primary); border: none; padding: 16px; border-radius: 12px; 
+            cursor: pointer; font-weight: bold; width: 100%; font-size: 17px;
+            letter-spacing: 3px; box-shadow: 0 4px 15px rgba(255,204,0,0.15);
         }
-        .publish-btn:active { transform: scale(0.98); }
 
-        /* 标签盒优化 */
-        .tag-box { background: white; padding: 25px; border-radius: 18px; margin-bottom: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
-        .tag-label { font-weight: bold; margin-bottom: 15px; display: block; color: var(--text-light); font-size: 14px; }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-        .tag-btn { 
-            background: #f9f9f9; 
-            border: 1px solid #eee; 
-            padding: 8px 18px; 
-            border-radius: 25px; 
-            font-size: 14px; 
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .tag-btn:hover { border-color: var(--primary); background: #fff; color: var(--accent); }
-
-        /* 📋 列表展示：解决排版拥挤 */
-        .trade-card { 
-            background: white; 
-            padding: 25px; 
-            border-radius: 15px; 
-            margin-bottom: 20px; 
-            border-left: 8px solid var(--primary); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            transition: 0.3s;
-        }
-        .trade-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid #f0f0f0; 
-            padding-bottom: 12px; 
-            margin-bottom: 15px; 
-        }
-        .uid-text { color: #aaa; font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; }
+        /* 🏷️ 标签分类区域 */
+        .tag-section { margin-bottom: 15px; }
+        .tag-label { font-weight: bold; margin-bottom: 10px; display: block; color: var(--text-light); font-size: 13px; display: flex; align-items: center; }
+        .tag-label::before { content: ""; display: inline-block; width: 4px; height: 14px; background: var(--primary); margin-right: 8px; border-radius: 2px; }
         
-        .copy-btn { background: #f5f5f5; border: none; padding: 5px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; color: #777; font-weight: bold; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .tag-btn { 
+            background: #f9f9f9; border: 1px solid #eee; padding: 6px 14px; 
+            border-radius: 20px; font-size: 13px; cursor: pointer; transition: 0.2s;
+        }
+        .tag-btn:hover { border-color: var(--primary); background: #fff; }
+        .tag-btn.medal { border-color: #ffe0b2; background: #fff8e1; color: #e65100; } /* 奖牌特有颜色 */
+
+        /* 列表卡片 */
+        .trade-card { 
+            background: white; padding: 22px; border-radius: 15px; margin-bottom: 18px; 
+            border-left: 6px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .trade-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f8f8f8; padding-bottom: 10px; margin-bottom: 12px; }
+        .uid-text { color: #aaa; font-family: 'Consolas', monospace; font-size: 15px; }
+        .copy-btn { background: #f0f0f0; border: none; padding: 4px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; color: #777; }
         .copy-btn.copied { background: #4CAF50; color: white; }
 
-        /* 内容行排版 */
-        .info-row { margin: 12px 0; display: flex; align-items: flex-start; }
-        .label-text { 
-            color: #ccc; 
-            font-size: 12px; 
-            font-weight: 800; 
-            min-width: 50px; 
-            margin-top: 5px;
-            letter-spacing: 1px;
-        }
-        .content-text { 
-            font-size: 16px; 
-            color: var(--text-main); 
-            word-break: break-all; 
-            padding-left: 5px;
-        }
+        .info-row { margin: 8px 0; display: flex; align-items: flex-start; }
+        .label-text { color: #ccc; font-size: 11px; font-weight: 800; min-width: 45px; margin-top: 6px; }
+        .content-text { font-size: 15px; color: var(--text-main); word-break: break-all; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 🏆 正确的署名：网名 & Gemini -->
-        <div class="developer-credit">
-            开发者：<strong>阿斯U发丝</strong> & <strong>Gemini</strong>
-        </div>
-        
-        <h2 style="text-align:center; color:#d4a017; margin-top:0; margin-bottom:25px; letter-spacing:2px;">🥚 洛克王国精灵蛋互换站</h2>
+        <div class="developer-credit">开发者：<strong>阿斯U发丝</strong> & <strong>Gemini</strong></div>
+        <h2 style="text-align:center; color:#d4a017; margin-top:0; margin-bottom:25px; letter-spacing:1.5px;">🥚 洛克王国精灵蛋互换站</h2>
 
-        <!-- 发布表单 -->
         <form action="/post" method="POST" class="tag-box">
             <div class="input-group">
                 <input type="text" name="uid" placeholder="你的UID" required onfocus="setCurrentInput(this)">
@@ -129,25 +79,39 @@
                 <input type="text" name="want_pet" placeholder="我想换..." required onfocus="setCurrentInput(this)">
             </div>
 
-            <span class="tag-label">✨ 点击特质标签填入选中的框:</span>
-            <div class="tag-container">
-                <button type="button" class="tag-btn" onclick="addTag('粗嗓门')">粗嗓门</button>
-                <button type="button" class="tag-btn" onclick="addTag('婉转声')">婉转声</button>
-                <button type="button" class="tag-btn" onclick="addTag('大块头')">大块头</button>
-                <button type="button" class="tag-btn" onclick="addTag('小不点')">小不点</button>
-                <button type="button" class="tag-btn" onclick="addTag('聪明')">聪明</button>
-                <button type="button" class="tag-btn" onclick="addTag('固执')">固执</button>
-                <button type="button" class="tag-btn" onclick="addTag('胆小')">胆小</button>
-                <button type="button" class="tag-btn" onclick="addTag('开朗')">开朗</button>
+            <!-- 🏅 精灵奖牌区 -->
+            <div class="tag-section">
+                <span class="tag-label">🏅 精灵奖牌 (体型):</span>
+                <div class="tag-container">
+                    <button type="button" class="tag-btn medal" onclick="addTag('粗嗓门')">粗嗓门</button>
+                    <button type="button" class="tag-btn medal" onclick="addTag('婉转声')">婉转声</button>
+                    <button type="button" class="tag-btn medal" onclick="addTag('大块头')">大块头</button>
+                    <button type="button" class="tag-btn medal" onclick="addTag('小不点')">小不点</button>
+                </div>
+            </div>
+
+            <!-- 🧠 性格区 -->
+            <div class="tag-section">
+                <span class="tag-label">🧠 推荐性格:</span>
+                <div class="tag-container">
+                    <button type="button" class="tag-btn" onclick="addTag('聪明')">聪明</button>
+                    <button type="button" class="tag-btn" onclick="addTag('固执')">固执</button>
+                    <button type="button" class="tag-btn" onclick="addTag('沉默')">沉默</button>
+                    <button type="button" class="tag-btn" onclick="addTag('平和')">平和</button>
+                    <button type="button" class="tag-btn" onclick="addTag('踏实')">踏实</button>
+                    <button type="button" class="tag-btn" onclick="addTag('胆小')">胆小</button>
+                    <button type="button" class="tag-btn" onclick="addTag('开朗')">开朗</button>
+                    <button type="button" class="tag-btn" onclick="addTag('急躁')">急躁</button>
+                    <button type="button" class="tag-btn" onclick="addTag('莽撞')">莽撞</button>
+                </div>
             </div>
             
             <button type="submit" class="publish-btn">🚀 立即发布</button>
         </form>
 
-        <!-- 搜索 -->
-        <form action="/" method="GET" style="display:flex; gap:12px; margin-bottom:30px;">
-            <input type="text" name="search" placeholder="输入搜索内容..." style="flex:1;" onfocus="setCurrentInput(this)">
-            <button type="submit" style="background:#333; color:white; border:none; border-radius:12px; padding:0 35px; cursor:pointer; font-weight:bold;">搜索</button>
+        <form action="/" method="GET" style="display:flex; gap:10px; margin-bottom:30px;">
+            <input type="text" name="search" placeholder="搜索关键词..." style="flex:1;" onfocus="setCurrentInput(this)">
+            <button type="submit" style="background:#333; color:white; border:none; border-radius:12px; padding:0 30px; cursor:pointer;">搜索</button>
         </form>
 
         <div id="board">
