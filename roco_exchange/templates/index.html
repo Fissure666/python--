@@ -5,116 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>洛克王国精灵蛋互换站</title>
     <style>
-        body { background-color: #fdf5e6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; color: #5d4037; }
+        :root { --primary: #ffcc00; --bg: #fff9e6; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
         
-        .signature { font-size: 12px; color: #8d6e63; opacity: 0.7; margin-bottom: 10px; text-align: center; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #ff8c00; display: flex; align-items: center; justify-content: center; gap: 10px; }
-
-        .top-container { max-width: 800px; margin: 0 auto 30px auto; display: flex; flex-direction: column; gap: 15px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        /* 📱 响应式输入组：手机自动堆叠，电脑横排 */
+        .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1 1 200px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
         
-        /* 搜索和发布表单样式 */
-        .inline-form { display: flex; gap: 10px; }
-        input { flex: 1; padding: 10px; border: 1px solid #eee; border-radius: 8px; outline: none; }
-        .btn { background: #ffcc00; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background: #ffb300; }
+        .publish-btn { background: var(--primary); border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* 核心布局：左右并排 */
-        .main-content { 
-            display: flex; 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            gap: 25px; 
-            align-items: flex-start; /* ✨ 核心修复：确保顶部对齐 */
+        /* 🏷️ 标签选择区域 */
+        .tag-box { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tag-label { font-weight: bold; margin-bottom: 8px; display: block; color: #666; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .tag-btn { 
+            background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 20px; 
+            font-size: 14px; cursor: pointer; transition: 0.3s;
         }
+        .tag-btn:active { background: var(--primary); transform: scale(0.95); }
 
-        .left-panel { flex: 1.5; min-width: 0; } /* 看板 */
-        .right-panel { flex: 1; min-width: 0; }  /* 留言板 */
-
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #f9f9f9; }
-        th { background: #fffde7; font-size: 14px; }
-
-        .msg-list { max-height: 500px; overflow-y: auto; margin-top: 15px; }
-        .msg-item { 
-            background: #fffbe6; padding: 12px; border-radius: 10px; margin-bottom: 10px; 
-            border-left: 4px solid #ffcc00; font-size: 14px; line-height: 1.6;
-            word-wrap: break-word; white-space: pre-wrap;
+        /* 📋 看板排版：修复文字溢出 */
+        .trade-card { 
+            background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid var(--primary);
+            word-break: break-all; line-height: 1.6;
         }
-
-        @media (max-width: 850px) {
-            .main-content { flex-direction: column; }
-            .left-panel, .right-panel { width: 100%; }
-        }
+        .trade-header { display: flex; justify-content: space-between; color: #888; font-size: 13px; margin-bottom: 5px; }
+        .pet-info { font-size: 16px; color: #333; }
+        .pet-tag { color: #ff6600; font-weight: bold; margin-right: 5px; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h2 style="text-align:center; color:#d4a017;">🥚 精灵蛋互换站</h2>
 
-    <div class="signature">开发者: 发丝(洛克王国世界) & Gemini 3 Flash (Google AI) | 致力于更好的玩家体验</div>
+        <!-- 发布表单 -->
+        <form action="/post" method="POST" class="tag-box">
+            <div class="input-group">
+                <input type="text" name="uid" placeholder="你的UID" required>
+                <input type="text" name="have_pet" id="have_input" placeholder="我有... (点击下方标签添加)" required>
+                <input type="text" name="want_pet" placeholder="我想换..." required>
+            </div>
 
-    <div class="header">
-        <h1>🥚 洛克王国精灵蛋互换站</h1>
-    </div>
+            <span class="tag-label">🏅 奖牌特质:</span>
+            <div class="tag-container">
+                <button type="button" class="tag-btn" onclick="addTag('粗嗓门')">粗嗓门</button>
+                <button type="button" class="tag-btn" onclick="addTag('婉转声')">婉转声</button>
+                <button type="button" class="tag-btn" onclick="addTag('大块头')">大块头</button>
+                <button type="button" class="tag-btn" onclick="addTag('小不点')">小不点</button>
+            </div>
 
-    <div class="top-container">
+            <span class="tag-label">🧠 性格特质:</span>
+            <div class="tag-container">
+                <button type="button" class="tag-btn" onclick="addTag('聪明')">聪明</button>
+                <button type="button" class="tag-btn" onclick="addTag('固执')">固执</button>
+                <button type="button" class="tag-btn" onclick="addTag('胆小')">胆小</button>
+                <button type="button" class="tag-btn" onclick="addTag('开朗')">开朗</button>
+                <button type="button" class="tag-btn" onclick="addTag('急躁')">急躁</button>
+                <button type="button" class="tag-btn" onclick="addTag('莽撞')">莽撞</button>
+            </div>
+            
+            <button type="submit" class="publish-btn">发布互换信息</button>
+        </form>
+
         <!-- 搜索框 -->
-        <div class="card">
-            <form action="/" method="get" class="inline-form">
-                <input type="text" name="search" placeholder="🔍 搜索精灵名字或 UID..." value="{{ request.args.get('search', '') }}">
-                <button type="submit" class="btn">搜索</button>
-                <a href="/" style="text-decoration:none; color:#999; font-size:13px; align-self:center;">重置</a>
-            </form>
-        </div>
+        <form action="/" method="GET" style="display:flex; gap:5px; margin-bottom:20px;">
+            <input type="text" name="search" placeholder="搜索精灵、UID或特质(如:大块头)...">
+            <button type="submit" style="background:#333; color:white; border:none; border-radius:8px; padding:0 20px;">搜索</button>
+        </form>
 
-        <!-- 发布框 -->
-        <div class="card">
-            <form action="/post" method="post" class="inline-form">
-                <input type="text" name="uid" placeholder="UID" required>
-                <input type="text" name="have_pet" placeholder="我有..." required>
-                <input type="text" name="want_pet" placeholder="想换..." required>
-                <button type="submit" class="btn">发布</button>
-            </form>
+        <!-- 互换列表 -->
+        <div id="board">
+            {% for trade in trades %}
+            <div class="trade-card">
+                <div class="trade-header"><span>UID: {{ trade.uid }}</span></div>
+                <div class="pet-info"><strong>我有：</strong>{{ trade.have_pet }}</div>
+                <div class="pet-info"><strong>想换：</strong>{{ trade.want_pet }}</div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 
-    <div class="main-content">
-        <!-- 左侧看板 -->
-        <div class="left-panel">
-            <div class="card">
-                <h3>📜 实时互换看板</h3>
-                <table>
-                    <thead>
-                        <tr><th>UID</th><th>我有</th><th>我想换</th></tr>
-                    </thead>
-                    <tbody>
-                        {% for trade in trades %}
-                        <tr><td>{{ trade.uid }}</td><td>{{ trade.have_pet }}</td><td>{{ trade.want_pet }}</td></tr>
-                        {% else %}
-                        <tr><td colspan="3" style="text-align:center; color:#999;">暂无匹配信息</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 右侧留言板 -->
-        <div class="right-panel">
-            <div class="card">
-                <h3>🌟 暖心留言板</h3>
-                <form action="/send_message" method="post">
-                    <input type="text" name="nickname" placeholder="昵称" required style="width:100%; margin-bottom:10px;">
-                    <textarea name="content" placeholder="写下你的祝福..." required style="width:100%; height:80px; padding:10px; border:1px solid #eee; border-radius:8px; margin-bottom:10px;"></textarea>
-                    <button type="submit" class="btn" style="width:100%;">发布留言</button>
-                </form>
-                <div class="msg-list">
-                    {% for msg in messages %}
-                    <div class="msg-item"><strong>{{ msg.nickname }}</strong>: {{ msg.content }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <script>
+        function addTag(tagName) {
+            const input = document.getElementById('have_input');
+            // 自动添加空格隔开标签
+            input.value += (input.value ? " " : "") + tagName;
+        }
+    </script>
 </body>
 </html>

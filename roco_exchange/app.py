@@ -5,34 +5,33 @@ import os
 
 app = Flask(__name__)
 
-# ✨ 核心：把你在 image_746e3a.png 看到的那串链接贴在这里
-# 记得把 <db_password> 换成你设定的数据库密码！
+# 🔒 请确保这里的密码已在 MongoDB "Database Access" 中重置并替换
 MONGO_URI = "mongodb+srv://Fissure666:5vt4BtcxWcPyBAtB@fissure666.d9j3cva.mongodb.net/?retryWrites=true&w=majority&appName=Fissure666"
 
-# 连接云端
+# 连接云端 MongoDB
 try:
     client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
     db = client['rock_kingdom']
     trades_col = db['trades']
     messages_col = db['messages']
-    print("✅ 成功连接到云数据库！")
+    print("✅ 云数据库连接成功！")
 except Exception as e:
     print(f"❌ 连接失败: {e}")
 
 @app.route('/')
 def index():
-    search_query = request.args.get('search', '').lower()
+    search_query = request.args.get('search', '').lower().strip()
     
-    # 从云端抓取最新的互换和留言（按 ID 倒序排列，最新的在上面）
+    # 获取数据（按 ID 倒序排列，确保最新消息在最上方）
     all_trades = list(trades_col.find().sort('_id', -1))
     messages = list(messages_col.find().sort('_id', -1))
     
-    # 搜索过滤
+    # 强化搜索：支持 UID、精灵名、性格、奖牌标签搜索
     if search_query:
         trades = [t for t in all_trades if 
+                  search_query in str(t.get('uid', '')).lower() or 
                   search_query in str(t.get('have_pet', '')).lower() or 
-                  search_query in str(t.get('want_pet', '')).lower() or 
-                  search_query in str(t.get('uid', '')).lower()]
+                  search_query in str(t.get('want_pet', '')).lower()]
     else:
         trades = all_trades
 
@@ -44,7 +43,7 @@ def post_trade():
     have = request.form.get('have_pet')
     want = request.form.get('want_pet')
     if uid and have and want:
-        # 直接存入云端
+        # 存入 MongoDB
         trades_col.insert_one({'uid': uid, 'have_pet': have, 'want_pet': want})
     return redirect(url_for('index'))
 
@@ -53,7 +52,6 @@ def send_message():
     nickname = request.form.get('nickname')
     content = request.form.get('content')
     if nickname and content:
-        # 存入云端留言板
         messages_col.insert_one({'nickname': nickname, 'content': content})
     return redirect(url_for('index'))
 
